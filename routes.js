@@ -90,13 +90,13 @@ if(error)
     name: req.body.userName,
     mail: req.body.email,
     address:{
-      street:req.body.street,
-      city:req.body.street,
-      country:req.body.country
+      street:req.body.address.street,
+      city:req.body.address.street,
+      country:req.body.address.country
     },
     socialmedia:{
-      facebook:req.body.facebook,
-      twitter:req.body.twitter
+      facebook:req.body.socialmedia.facebook,
+      twitter:req.body.socialmedia.twitter
     }
   });
   if(newUser)
