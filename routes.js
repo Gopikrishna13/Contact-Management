@@ -3,12 +3,12 @@ const routes = express.Router();
 const customer = require("./routes/model/customer");
 const bodyParser = require("body-parser");
 const Joi = require('joi');
-
+const validate1=require("./middleware/validation.js");
 
 
 routes.use(bodyParser.json());
 
-routes.use('/',(req,res,next)=>{
+routes.use('/', (req, res, next) => {
   console.log("Call Recieved");
   next();
 })
@@ -40,73 +40,51 @@ routes.get("/list/:id", function (req, res) {
     else res.send(response);
   });
 });
+routes.use("/customer",function(req,res,next){
+  const newcustomer = {
+    name: req.body.name,
+    mail: req.body.mail,
+    address: {
+      street: req.body.address.street,
+      city: req.body.address.city,
+      country: req.body.address.country
+    },
+    socialmedia: {
+      facebook: req.body.socialmedia.facebook,
+      twitter: req.body.socialmedia.twitter
+    }
+  };
 
-routes.post("/customer", function (req, res,next) {
+  const { error } = validate1.validate(newcustomer);
+  next();
+})
+routes.post("/customer", function (req, res, next) {
 
-  console.log(req.body.address.street);
   
-
-  const validation = Joi.object({
-    
-    name: Joi.string().min(5).max(30).regex(/^[a-zA-Z]+$/).required(),
-                  
-    mail: Joi.string()
-           .email()
-           .min(5)
-           .max(50)
-           .required(),
-    address:{
-      street:Joi.string().min(5).max(30).required(),
-      city:Joi.string().min(5).max(30).required(),
-      country:Joi.string().min(5).max(30).required(),
-    },
-    socialmedia:{
-      facebook:Joi.string().min(5).max(30).required(),
-      twitter:Joi.string().min(5).max(30).required(),
+  if (error) {
+    res.sendStatus(406);
+    console.log(error);
+  } else {
+    const newUser = customer.create({
+      name: req.body.name,
+      mail: req.body.mail,
+      address: {
+        street: req.body.address.street,
+        city: req.body.address.city,
+        country: req.body.address.country
+      },
+      socialmedia: {
+        facebook: req.body.socialmedia.facebook,
+        twitter: req.body.socialmedia.twitter
+      }
+    });
+    if (newUser) {
+      res.sendStatus(200);
+      console.log("New User Added");
+    } else {
+      console.log("Failed")
     }
-
-});
-const newcustomer={
-  name:req.body.name,
-  mail:req.body.mail,
-  address:{
-    street:req.body.address.street,
-    city:req.body.address.city,
-    country:req.body.address.country
-  },
-  socialmedia:{
-    facebook:req.body.socialmedia.facebook,
-    twitter:req.body.socialmedia.twitter
   }
-};
-console.log(newcustomer);
-const{error}=validation.validate(newcustomer);
-if(error)
-{
-  res.sendStatus(406);
- console.log(error);
-}else{
-  const newUser = customer.create({
-    name: req.body.userName,
-    mail: req.body.email,
-    address:{
-      street:req.body.address.street,
-      city:req.body.address.street,
-      country:req.body.address.country
-    },
-    socialmedia:{
-      facebook:req.body.socialmedia.facebook,
-      twitter:req.body.socialmedia.twitter
-    }
-  });
-  if(newUser)
-  {
-    res.status(200);
-    console.log("New User Added");
-  }else{
-    console.log("Failed")
-  }
-}
 
 });
 
