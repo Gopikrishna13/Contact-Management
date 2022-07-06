@@ -10,13 +10,13 @@ const validation = Joi.object({
       .max(50)
       .required(),
     address: {
-      street: Joi.string().min(5).max(30),
-      city: Joi.string().min(5).max(30),
-      country: Joi.string().min(5).max(30)
+      street: Joi.string().min(5).max(30).required(),
+      city: Joi.string().min(5).max(30).required(),
+      country: Joi.string().min(5).max(30).required()
     },
     socialmedia: {
-      facebook: Joi.string().min(5).max(30),
-      twitter: Joi.string().min(5).max(30)
+      facebook: Joi.string().min(0).max(30),
+      twitter: Joi.string().min(0).max(30)
     }
 
   });
